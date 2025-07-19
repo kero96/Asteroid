@@ -1,9 +1,12 @@
 import pygame as pg
 import constants as c
+import circleshape as cs
+import player as pl
 
 def main():
     pg.init()
     screen = pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT))
+    player = pl.Player(c.SCREEN_WIDTH // 2, c.SCREEN_HEIGHT // 2)
 
     pg.time.Clock().tick(60)  # Set the frame rate to 60 FPS
     dt = 0.0  # Initialize delta time
@@ -16,8 +19,11 @@ def main():
 
         fill_color = (0, 0, 0)  # Black background
         screen.fill(fill_color)
-        pg.display.flip()
 
+        player.draw(screen)
+        player.update(dt)
+
+        pg.display.flip()
         dt = pg.time.Clock().tick(60) / 1000.0
 
     print("Starting Asteroids!")
