@@ -2,6 +2,8 @@ import pygame as pg
 import constants as c
 import circleshape as cs
 import player as pl
+import asteroid as ast
+import asteroidfield as af
 
 def main():
     pg.init()
@@ -10,6 +12,19 @@ def main():
 
     pg.time.Clock().tick(60)  # Set the frame rate to 60 FPS
     dt = 0.0  # Initialize delta time
+
+    updatable_group = pg.sprite.Group()
+    drawable_group = pg.sprite.Group()
+    asteroid_group = pg.sprite.Group()
+
+    ast.Asteroid.containers = (updatable_group, drawable_group, asteroid_group)
+    pl.containers = (updatable_group, drawable_group)
+    af.AsteroidField.containers = (updatable_group)
+
+    updatable_group.add(player)
+    drawable_group.add(player)
+
+    asteroid_field = af.AsteroidField()
 
     while True:
         for event in pg.event.get():
@@ -20,8 +35,10 @@ def main():
         fill_color = (0, 0, 0)  # Black background
         screen.fill(fill_color)
 
-        player.draw(screen)
-        player.update(dt)
+        updatable_group.update(dt)
+        
+        for sprite in drawable_group:
+            sprite.draw(screen)
 
         pg.display.flip()
         dt = pg.time.Clock().tick(60) / 1000.0
