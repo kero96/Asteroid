@@ -4,6 +4,7 @@ import circleshape as cs
 import player as pl
 import asteroid as ast
 import asteroidfield as af
+from shot import Shot
 
 def main():
     pg.init()
@@ -16,10 +17,12 @@ def main():
     updatable_group = pg.sprite.Group()
     drawable_group = pg.sprite.Group()
     asteroid_group = pg.sprite.Group()
+    shot_group = pg.sprite.Group()
 
     ast.Asteroid.containers = (updatable_group, drawable_group, asteroid_group)
     pl.containers = (updatable_group, drawable_group)
     af.AsteroidField.containers = (updatable_group)
+    Shot.containers = (updatable_group, drawable_group, shot_group)
 
     updatable_group.add(player)
     drawable_group.add(player)
@@ -36,6 +39,11 @@ def main():
         screen.fill(fill_color)
 
         updatable_group.update(dt)
+
+        for asteroid in asteroid_group:
+            if asteroid.collision(player):
+                print("Game Over!")
+                sys.exit()
         
         for sprite in drawable_group:
             sprite.draw(screen)
