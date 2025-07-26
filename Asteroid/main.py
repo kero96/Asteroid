@@ -29,6 +29,10 @@ def main():
 
     asteroid_field = af.AsteroidField()
 
+    score = 0
+    lives = 3
+    font = pg.font.Font(None, 36)
+
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -42,16 +46,42 @@ def main():
 
         for asteroid in asteroid_group:
             if asteroid.collision(player):
-                print("Game Over!")
-                sys.exit()
+                lives -= 1
+                asteroid.kill()
+                if lives <= 0:
+                    player.kill()
+                    asteroid_group.empty()
+                    shot_group.empty()
+                    updatable_group.empty()
+                    drawable_group.empty()
+
+                    # DISPLAY GAME OVER MESSAGE
+                    game_over_font = pg.font.Font(None, 120)
+                    game_over_text = game_over_font.render("GAME OVER", True, (255, 0, 0))
+                    text_rect = game_over_text.get_rect(center=(c.SCREEN_WIDTH // 2, c.SCREEN_HEIGHT // 2))
+                    screen.blit(game_over_text, text_rect)
+                    pg.display.flip()
+                    pg.time.wait(2000)
+                    pg.quit()
+                    sys.exit()
+                else:
+                    player.position = pg.Vector2(c.SCREEN_WIDTH // 2, c.SCREEN_HEIGHT // 2)
+                    break
+                
         for asteroid in asteroid_group:
             for shot in shot_group:
                 if shot.collision(asteroid):
                     asteroid.split()
                     shot.kill()
+                    score += 10
 
         for sprite in drawable_group:
             sprite.draw(screen)
+
+        score_text = font.render(f"Score: {score}", True, (255, 255, 255))
+        lives_text = font.render(f"Lives: {lives}", True, (255, 255, 255))
+        screen.blit(score_text, (10, 10))
+        screen.blit(lives_text, (10, 50))
 
         pg.display.flip()
         dt = pg.time.Clock().tick(60) / 1000.0
